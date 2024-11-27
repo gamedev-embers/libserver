@@ -18,7 +18,7 @@ func (c CustomItem) GetWeight() int64 {
 	return int64(c.Weight)
 }
 
-func make_testdatas(count int) []*CustomItem {
+func make_items(count int) []*CustomItem {
 	rs := make([]*CustomItem, count)
 	for i := 0; i < count; i++ {
 		num := i + 1
@@ -76,7 +76,7 @@ func TestBag(t *testing.T) {
 
 func TestBag_DropMany(t *testing.T) {
 	assert := assert.New(t)
-	inputs := make_testdatas(10)
+	inputs := make_items(10)
 
 	bag := New(inputs)
 	r := rand.New(rand.NewSource(0))

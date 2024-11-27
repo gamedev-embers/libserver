@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"reflect"
-	"testing"
 )
 
 type snapshotContext struct {
@@ -24,7 +23,7 @@ func (ctx *snapshotContext) Rollback() error {
 }
 
 // Snapshot data, then rollback after test finished
-func SnapshotT(t *testing.T, val interface{}) {
+func SnapshotT(t T, val interface{}) {
 	snap, err := Snapshot(val)
 	if err != nil {
 		t.Errorf("Snapshot failed: %v", err)

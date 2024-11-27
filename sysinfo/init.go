@@ -11,7 +11,11 @@ var info *SysInfo
 
 func Show() {
 	for _, line := range Dump() {
-		log.Print(line)
+		log.Println(line)
+	}
+
+	for _, line := range DumpMem() {
+		log.Println(line)
 	}
 }
 
