@@ -7,25 +7,50 @@ import (
 )
 
 func TestTokenizer(t *testing.T) {
-	tokens, err := tokenizer("a + b - c - a")
-	if err != nil {
-		t.Fatalf("tokenizer failed: %v", err)
-	}
-	assert.Equal(t, 13, len(tokens))
-	assert.Equal(t, "a", tokens[0].Value)
-	assert.Equal(t, "b", tokens[4].Value)
-	assert.Equal(t, "c", tokens[8].Value)
-	assert.Equal(t, "a", tokens[12].Value)
+	t.Run("case1", func(t *testing.T) {
+		expr := "(a + b + c) = (b + a + c)"
+		tokens, err := tokenizer(expr)
+		if err != nil {
+			t.Fatalf("tokenizer failed: %v", err)
+		}
+		chars := []rune(expr)
+		assert.Equal(t, len(chars), len(tokens))
+		for i, c := range chars {
+			assert.Equal(t, string(c), tokens[i].Value)
+		}
+	})
 }
 
 func TestDump(t *testing.T) {
-	s, err := Dump("a + b - c + a", map[string]any{
-		"a": 1,
-		"b": 2,
-		"c": 3,
-	})
-	if err != nil {
-		t.Fatalf("tokenizer failed: %v", err)
+	_cases := []struct {
+		expr string
+		args map[string]any
+		want string
+	}{
+		{
+			expr: "x + y - z",
+			args: map[string]any{
+				"x": 10,
+				"y": 20,
+				"z": 5,
+			},
+			want: "x[10] + y[20] - z[5]",
+		},
+		{
+			expr: "value1 * value2 / value3",
+			args: map[string]any{
+				"value1": 3.14159,
+				"value2": 2.71828,
+				"value3": 1.61803,
+			},
+			want: "value1[3.1416] * value2[2.7183] / value3[1.6180]",
+		},
 	}
-	assert.Equal(t, "a[1] + b[2] - c[3] + a[1]", s)
+	for _, c := range _cases {
+		t.Run(c.expr, func(t *testing.T) {
+			got, err := Dump(c.expr, c.args)
+			assert.NoError(t, err)
+			assert.Equal(t, c.want, got)
+		})
+	}
 }
