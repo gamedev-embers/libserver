@@ -36,3 +36,39 @@ func TestCounterByDays(t *testing.T) {
 	assert.Equal(t, 100, obj.GetTotal()) // 第2天的数据被移除
 	assert.Equal(t, []int{100, 0, 0, 0, 0}, obj.Value)
 }
+
+func TestCounterByDays_Init(t *testing.T) {
+	startDate := time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC)
+	t.Run("same-length", func(t *testing.T) {
+		values := []int32{1, 2, 3, 4, 5}
+		obj := NewCounterByDaysWith(5, startDate, values)
+		assert.Equal(t, 15, obj.GetTotal())
+		assert.Equal(t, values, obj.Value)
+
+		// 添加数据到第1天
+		obj.Add(10, time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC))
+		assert.Equal(t, []int32{11, 2, 3, 4, 5}, obj.Value)
+	})
+
+	t.Run("less-length", func(t *testing.T) {
+		values := []int32{1, 2, 3, 4}
+		obj := NewCounterByDaysWith(5, startDate, values)
+		assert.Equal(t, 10, obj.GetTotal())
+		assert.Equal(t, []int32{0, 1, 2, 3, 4}, obj.Value)
+
+		// 添加数据到第1天
+		obj.Add(10, time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC))
+		assert.Equal(t, []int32{10, 1, 2, 3, 4}, obj.Value)
+	})
+
+	t.Run("greater-length", func(t *testing.T) {
+		values := []int32{1, 2, 3, 4, 5, 6}
+		obj := NewCounterByDaysWith(5, startDate, values)
+		assert.Equal(t, 20, obj.GetTotal())
+		assert.Equal(t, []int32{2, 3, 4, 5, 6}, obj.Value)
+
+		// 添加数据到第1天
+		obj.Add(10, time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC))
+		assert.Equal(t, []int32{12, 3, 4, 5, 6}, obj.Value)
+	})
+}

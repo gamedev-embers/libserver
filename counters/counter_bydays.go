@@ -16,10 +16,8 @@ type CounterByDays struct {
 }
 
 func NewCounterByDays(days int, starDate time.Time) *CounterByDays {
-	return &CounterByDays{
-		StartDate: zeroTime(starDate),
-		Value:     make([]int32, days),
-	}
+	values := make([]int32, days)
+	return NewCounterByDaysWith(days, starDate, values)
 }
 
 func NewCounterByDaysWith(days int, starDate time.Time, values []int32) *CounterByDays {
@@ -31,10 +29,13 @@ func NewCounterByDaysWith(days int, starDate time.Time, values []int32) *Counter
 	} else if len(values) > days {
 		values = values[len(values)-days:]
 	}
-	return &CounterByDays{
+
+	obj := &CounterByDays{
 		StartDate: zeroTime(starDate),
 		Value:     values,
 	}
+	obj.total = obj.calcTotal()
+	return obj
 }
 
 func (c *CounterByDays) Add(value int32, now time.Time) {
