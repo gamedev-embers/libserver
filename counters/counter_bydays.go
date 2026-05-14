@@ -55,8 +55,8 @@ func (c *CounterByDays) Add(value int32, now time.Time) {
 		} else {
 			copy(c.Value, c.Value[shift:])
 			copy(c.Value[len(c.Value)-shift:], make([]int32, shift))
-			dayIndex -= shift
 			c.StartDate = c.StartDate.Add(time.Duration(shift) * DAY_DURATION)
+			dayIndex -= shift
 		}
 	}
 	c.Value[dayIndex] += value
